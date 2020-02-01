@@ -16,6 +16,8 @@
 
 #[cfg(feature = "rusttype")]
 mod rusttype_impl;
+#[cfg(feature = "image")]
+mod image_impl;
 
 // TODO: going to want a better hashmap
 use std::collections::HashMap;
@@ -162,6 +164,6 @@ pub enum CacheError {
 }
 
 pub enum PixelType {
-    Alpha, RGB, RGBA
+    Alpha, RGBA
 }
 
