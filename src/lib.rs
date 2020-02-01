@@ -14,14 +14,20 @@
 //! provide this library the glyphs to render
 //! - DON'T handle layout or rendering to the screen. This can be taken care of 
 
+#[cfg(feature = "rusttype")]
+mod rusttype_impl;
+
 // TODO: going to want a better hashmap
 use std::collections::HashMap;
 
-pub trait Font {
+pub trait FontProvider {
+    fn supports_vertical(&self) -> bool;
     fn pixel_type(&self) -> PixelType;
     fn glyphs(&self, string: &str, glyphs: &mut Vec<Glyph>);
-    fn metrics(&self, glyph: Glyph) -> Metrics;
-    fn rasterize(&self, glyph: GlyphKey) -> &[u8];
+    fn line_width(&self, size: f32) -> f32;
+    fn line_height(&self, size: f32) -> f32;
+    fn metrics(&self, key: GlyphKey) -> Metrics;
+    fn rasterize(&self, key: GlyphKey) -> Vec<u8>;
 }
 
 pub trait Texture {
@@ -32,7 +38,7 @@ pub trait Texture {
 
 /// The index of the font character to render
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
-pub struct Glyph(u32);
+pub struct Glyph(pub u32);
 
 pub struct FontCache<T: Texture> {
     glyph_buffer: Vec<Glyph>,
@@ -40,7 +46,7 @@ pub struct FontCache<T: Texture> {
 }
 
 struct Cache<T: Texture> {
-    font: Box<dyn Font>,
+    font: Box<dyn FontProvider>,
     texture: T,
     map: HashMap<GlyphKey, GpuGlyph>,
     h_cursor: u32,
@@ -51,7 +57,7 @@ struct Cache<T: Texture> {
 // TODO: probably add a better packing algorithm
 
 impl<T: Texture> FontCache<T> {
-    pub fn new(font: Box<dyn Font>, texture: T) -> Self {
+    pub fn new(font: Box<dyn FontProvider>, texture: T) -> Self {
         FontCache {
             glyph_buffer: Vec::new(),
             cache: Cache {
@@ -74,10 +80,15 @@ impl<T: Texture> FontCache<T> {
     }
 
     pub fn render_string<'a>(&'a mut self, string: &str, size: f32) -> impl 'a + Iterator<Item = Result<GpuGlyph, CacheError>> {
+        #[cfg(feature = "unicode-normalization")]
+        let string = {
+            use unicode_normalization::UnicodeNormalization;
+            &string.nfc().collect::<String>()
+        };
         let size = size.to_bits();
         let glyph_buffer = &mut self.glyph_buffer;
         let cache = &mut self.cache;
-        cache.font.glyphs(string, glyph_buffer);
+        cache.font.glyphs(&string, glyph_buffer);
         glyph_buffer.drain(..).map(move |glyph| cache.render_glyph(GlyphKey {
             glyph,
             size
@@ -98,7 +109,7 @@ impl<T: Texture> Cache<T> {
     }
 
     pub fn render_glyph(&mut self, key: GlyphKey) -> Result<GpuGlyph, CacheError> {
-        let metrics = self.font.metrics(key.glyph);
+        let metrics = self.font.metrics(key);
         if metrics.width > self.texture.width() || metrics.height > self.texture.height() {
             return Err(CacheError::TextureTooSmall);
         }
@@ -117,12 +128,12 @@ impl<T: Texture> Cache<T> {
             width: metrics.width,
             height: metrics.height,
         };
-        self.texture.put_rect(pixel_type, data, &gpu);
+        self.texture.put_rect(pixel_type, &data[..], &gpu);
         Ok(gpu)
     }
 }
 
-#[derive(PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub struct GlyphKey {
     pub glyph: Glyph,
     size: u32,
@@ -135,12 +146,13 @@ pub struct GpuGlyph {
     pub height: u32,
 }
 
+#[non_exhaustive]
 pub struct Metrics {
     pub width: u32,
     pub height: u32,
     pub bearing_x: f32,
-    pub bearing_y: f32,
     pub advance_x: f32,
+    pub bearing_y: f32,
     pub advance_y: f32,
 }
 
@@ -153,10 +165,3 @@ pub enum PixelType {
     Alpha, RGB, RGBA
 }
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}

@@ -7,3 +7,5 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+rusttype = { version = "0.8", optional = true }
+unicode-normalization = { version = "0.1.12", optional = true }
