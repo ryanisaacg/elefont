@@ -114,6 +114,9 @@ impl<T: Texture> Cache<T> {
     }
 
     pub fn render_glyph(&mut self, key: GlyphKey) -> Result<GpuGlyph, CacheError> {
+        if let Some(glyph) = self.map.get(&key) {
+            return Ok(*glyph);
+        }
         let metrics = self.font.metrics(key);
         if metrics.width > self.texture.width() || metrics.height > self.texture.height() {
             return Err(CacheError::TextureTooSmall);
@@ -134,6 +137,7 @@ impl<T: Texture> Cache<T> {
             height: metrics.height,
         };
         self.texture.put_rect(pixel_type, &data[..], &gpu);
+        self.map.insert(key, gpu);
         Ok(gpu)
     }
 }
@@ -144,6 +148,7 @@ pub struct GlyphKey {
     size: u32,
 }
 
+#[derive(Copy, Clone, Debug)]
 pub struct GpuGlyph {
     pub x: u32,
     pub y: u32,
