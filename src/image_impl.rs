@@ -21,7 +21,8 @@ impl Texture for ImageBuffer<Rgba<u8>, Vec<u8>> {
                         for i in 0..3 {
                             self.get_pixel_mut(gpu.x + x, gpu.y + y).0[i] = 255;
                         }
-                        self.get_pixel_mut(gpu.x + x, gpu.y + y).0[3] = data[(x + y * gpu.width) as usize];
+                        self.get_pixel_mut(gpu.x + x, gpu.y + y).0[3] =
+                            data[(x + y * gpu.width) as usize];
                     }
                 }
             }
@@ -38,4 +39,3 @@ impl Texture for ImageBuffer<Rgba<u8>, Vec<u8>> {
         }
     }
 }
-

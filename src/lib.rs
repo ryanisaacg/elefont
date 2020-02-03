@@ -12,12 +12,12 @@
 //! frameworks)
 //! - DON'T handle complex tasks like shaping. The font stack should handle that elsewhere, and
 //! provide this library the glyphs to render
-//! - DON'T handle layout or rendering to the screen. This can be taken care of 
+//! - DON'T handle layout or rendering to the screen. This can be taken care of
 
-#[cfg(feature = "rusttype")]
-mod rusttype_impl;
 #[cfg(feature = "image")]
 mod image_impl;
+#[cfg(feature = "rusttype")]
+mod rusttype_impl;
 
 // TODO: going to want a better hashmap
 use std::collections::HashMap;
@@ -69,7 +69,7 @@ impl<T: Texture> FontCache<T> {
                 h_cursor: 0,
                 v_cursor: 0,
                 current_line_height: 0,
-            }
+            },
         }
     }
 
@@ -81,7 +81,11 @@ impl<T: Texture> FontCache<T> {
         self.cache.render_glyph(key)
     }
 
-    pub fn render_string<'a>(&'a mut self, string: &str, size: f32) -> impl 'a + Iterator<Item = Result<GpuGlyph, CacheError>> {
+    pub fn render_string<'a>(
+        &'a mut self,
+        string: &str,
+        size: f32,
+    ) -> impl 'a + Iterator<Item = Result<GpuGlyph, CacheError>> {
         #[cfg(feature = "unicode-normalization")]
         let mut string = {
             use unicode_normalization::UnicodeNormalization;
@@ -94,14 +98,15 @@ impl<T: Texture> FontCache<T> {
         let glyph_buffer = &mut self.glyph_buffer;
         let cache = &mut self.cache;
         cache.font.glyphs(&string, glyph_buffer);
-        glyph_buffer.drain(..).map(move |glyph| cache.render_glyph(GlyphKey {
-            glyph,
-            size
-        }))
+        glyph_buffer
+            .drain(..)
+            .map(move |glyph| cache.render_glyph(GlyphKey { glyph, size }))
     }
 
     pub fn cache_string(&mut self, string: &str, size: f32) -> Result<(), CacheError> {
-        self.render_string(string, size).map(|r| r.map(|_| ())).collect()
+        self.render_string(string, size)
+            .map(|r| r.map(|_| ()))
+            .collect()
     }
 
     pub fn texture(&self) -> &T {
@@ -180,6 +185,6 @@ pub enum CacheError {
 }
 
 pub enum PixelType {
-    Alpha, RGBA
+    Alpha,
+    RGBA,
 }
-
