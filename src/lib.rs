@@ -83,10 +83,13 @@ impl<T: Texture> FontCache<T> {
 
     pub fn render_string<'a>(&'a mut self, string: &str, size: f32) -> impl 'a + Iterator<Item = Result<GpuGlyph, CacheError>> {
         #[cfg(feature = "unicode-normalization")]
-        let string = {
+        let mut string = {
             use unicode_normalization::UnicodeNormalization;
-            &string.nfc().collect::<String>()
+            string.nfc().collect::<String>()
         };
+        #[cfg(not(feature = "unicode-normalization"))]
+        let mut string = string.to_owned();
+        string.retain(|c| !c.is_whitespace());
         let size = size.to_bits();
         let glyph_buffer = &mut self.glyph_buffer;
         let cache = &mut self.cache;
