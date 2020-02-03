@@ -123,7 +123,8 @@ impl<T: Texture> Cache<T> {
         }
         if metrics.width + self.h_cursor > self.texture.width() {
             self.h_cursor = 0;
-            self.v_cursor += self.current_line_height;
+            self.v_cursor += self.current_line_height + 1;
+            self.current_line_height = 0;
         }
         if metrics.height + self.v_cursor > self.texture.height() {
             return Err(CacheError::OutOfSpace);
@@ -137,6 +138,8 @@ impl<T: Texture> Cache<T> {
             height: metrics.height,
         };
         self.texture.put_rect(pixel_type, &data[..], &gpu);
+        self.h_cursor += gpu.width + 1;
+        self.current_line_height = self.current_line_height.max(gpu.height);
         self.map.insert(key, gpu);
         Ok(gpu)
     }
@@ -166,6 +169,7 @@ pub struct Metrics {
     pub advance_y: f32,
 }
 
+#[derive(Debug)]
 pub enum CacheError {
     TextureTooSmall,
     OutOfSpace,
