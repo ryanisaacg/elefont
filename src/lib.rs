@@ -100,6 +100,10 @@ impl<T: Texture> FontCache<T> {
         }))
     }
 
+    pub fn cache_string(&mut self, string: &str, size: f32) -> Result<(), CacheError> {
+        self.render_string(string, size).map(|r| r.map(|_| ())).collect()
+    }
+
     pub fn texture(&self) -> &T {
         &self.cache.texture
     }
