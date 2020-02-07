@@ -1,4 +1,4 @@
-use font_cache::FontCache;
+use elefont::FontCache;
 use image::{ImageBuffer, Rgba};
 use rusttype::Font;
 
