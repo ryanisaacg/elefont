@@ -3,7 +3,7 @@ use image::{ImageBuffer, Rgba};
 use rusttype::Font;
 
 fn main() {
-    let font_data = include_bytes!("../DejaVuSans.ttf");
+    let font_data = include_bytes!("DejaVuSans.ttf");
     let font = Font::from_bytes(font_data as &[u8]).expect("Error constructing Font");
 
     let image = ImageBuffer::new(200, 200);
