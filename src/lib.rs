@@ -109,7 +109,7 @@ impl<T: Texture> FontCache<T> {
     }
 
     /// Render a glyph to the texture at a given size
-    pub fn render_glyph(&mut self, key: GlyphKey) -> Result<TextureGlyph, CacheError> {
+    pub fn render_glyph(&mut self, key: GlyphKey) -> Result<(Metrics, TextureGlyph), CacheError> {
         self.cache.render_glyph(key)
     }
 
@@ -118,7 +118,7 @@ impl<T: Texture> FontCache<T> {
         &'a mut self,
         string: &str,
         size: f32,
-    ) -> impl 'a + Iterator<Item = Result<TextureGlyph, CacheError>> {
+    ) -> impl 'a + Iterator<Item = Result<(Metrics, TextureGlyph), CacheError>> {
         #[cfg(feature = "unicode-normalization")]
         let mut string = {
             use unicode_normalization::UnicodeNormalization;
@@ -163,9 +163,9 @@ impl<T: Texture> Cache<T> {
         self.current_line_height = 0;
     }
 
-    fn render_glyph(&mut self, key: GlyphKey) -> Result<TextureGlyph, CacheError> {
+    fn render_glyph(&mut self, key: GlyphKey) -> Result<(Metrics, TextureGlyph), CacheError> {
         if let Some(glyph) = self.map.get(&key) {
-            return Ok(*glyph);
+            return Ok((self.font.metrics(key), *glyph));
         }
         let metrics = self.font.metrics(key);
         if metrics.width > self.texture.width() || metrics.height > self.texture.height() {
@@ -191,7 +191,8 @@ impl<T: Texture> Cache<T> {
         self.h_cursor += gpu.width + 1;
         self.current_line_height = self.current_line_height.max(gpu.height);
         self.map.insert(key, gpu);
-        Ok(gpu)
+
+        Ok((self.font.metrics(key), gpu))
     }
 }
 

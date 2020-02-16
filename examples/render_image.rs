@@ -1,5 +1,5 @@
 use elefont::FontCache;
-use image::{ImageBuffer, Rgba};
+use image::ImageBuffer;
 use rusttype::Font;
 
 fn main() {
