@@ -11,7 +11,7 @@ impl Texture for ImageBuffer<Rgba<u8>, Vec<u8>> {
         ImageBuffer::height(self)
     }
 
-    fn put_rect(&mut self, pixel: PixelType, data: &[u8], gpu: &GpuGlyph) {
+    fn put_rect(&mut self, pixel: PixelType, data: &[u8], gpu: &TextureGlyph) {
         use PixelType::*;
 
         match pixel {
