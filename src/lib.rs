@@ -22,6 +22,7 @@ mod rusttype_impl;
 // TODO: handle whitespace inside the string
 // TODO: texture too small
 // TODO: going to want a better hashmap
+// TODO: probably add a better packing algorithm
 use std::collections::HashMap;
 
 /// Any object that can turn characters into glyphs and render them can be a FontProvider
@@ -81,7 +82,6 @@ struct Cache<T: Texture> {
     current_line_height: u32,
 }
 
-// TODO: probably add a better packing algorithm
 
 impl<T: Texture> FontCache<T> {
     /// Create a new FontCache that pulls from the given provider and renders to the provided
