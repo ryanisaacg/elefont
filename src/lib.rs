@@ -114,6 +114,9 @@ impl<T: Texture> FontCache<T> {
     }
 
     /// Attempt to convert a string into a series of glyphs or errors
+    ///
+    /// Before being converted, the string is normalized if the "unicode-normalilzation" feature is
+    /// activated, and whitespace characters are removed.
     pub fn render_string<'a>(
         &'a mut self,
         string: &str,
@@ -139,7 +142,8 @@ impl<T: Texture> FontCache<T> {
     /// Cache a string or return an error if one occurred
     ///
     /// This can be useful if the entire domain of the possible glyphs is known beforehand (like a
-    /// bitmap font.)
+    /// bitmap font.) Under the hood, this just calls [`render_string`] and ignores the returned
+    /// glyphs.
     pub fn cache_string(&mut self, string: &str, size: f32) -> Result<(), CacheError> {
         self.render_string(string, size)
             .map(|r| r.map(|_| ()))
