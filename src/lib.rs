@@ -229,6 +229,7 @@ pub struct TextureGlyph {
 
 /// The layout information for a glyph
 #[non_exhaustive]
+#[derive(Clone, Debug)]
 pub struct Metrics {
     pub width: u32,
     pub height: u32,
@@ -238,8 +239,9 @@ pub struct Metrics {
     pub advance_y: f32,
 }
 
+// TODO: derive error
 /// An error generated during a cache operation
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum CacheError {
     /// No matter what, the texture is too small to render the glyph
     ///
