@@ -52,7 +52,7 @@ pub trait FontProvider {
     /// Convert a character into image bytes, with the format determined by [`pixel_type`]
     ///
     /// [`pixel_type`]: FontProvider::pixel_type
-    fn rasterize(&self, key: GlyphKey) -> Vec<u8>;
+    fn rasterize(&self, key: GlyphKey) -> Result<Vec<u8>, CacheError>;
     /// Optionally expose extra kerning information for glyphs
     ///
     /// By default, this is always None
@@ -181,29 +181,32 @@ impl<T: Texture> Cache<T> {
             return Ok((self.font.metrics(key), *glyph));
         }
         let metrics = self.font.metrics(key);
-        if metrics.width > self.texture.width() || metrics.height > self.texture.height() {
+        let bounds = metrics.bounds.unwrap();
+        if bounds.width > self.texture.width() || bounds.height > self.texture.height() {
             return Err(CacheError::TextureTooSmall);
         }
-        if metrics.width + self.h_cursor > self.texture.width() {
+        if bounds.width + self.h_cursor > self.texture.width() {
             self.h_cursor = 0;
             self.v_cursor += self.current_line_height + 1;
             self.current_line_height = 0;
         }
-        if metrics.height + self.v_cursor > self.texture.height() {
+        if bounds.height + self.v_cursor > self.texture.height() {
             return Err(CacheError::OutOfSpace);
         }
         let pixel_type = self.font.pixel_type();
-        let data = self.font.rasterize(key);
+        let data = self.font.rasterize(key)?;
         let gpu = TextureGlyph {
             key,
-            x: self.h_cursor,
-            y: self.v_cursor,
-            width: metrics.width,
-            height: metrics.height,
+            bounds: Bounds {
+                x: self.h_cursor as i32,
+                y: self.v_cursor as i32,
+                width: bounds.width,
+                height: bounds.height,
+            },
         };
         self.texture.put_rect(pixel_type, &data[..], &gpu);
-        self.h_cursor += gpu.width + 1;
-        self.current_line_height = self.current_line_height.max(gpu.height);
+        self.h_cursor += gpu.bounds.width + 1;
+        self.current_line_height = self.current_line_height.max(gpu.bounds.height);
         self.map.insert(key, gpu);
 
         Ok((self.font.metrics(key), gpu))
@@ -245,24 +248,26 @@ impl GlyphKey {
 #[derive(Copy, Clone, Debug)]
 pub struct TextureGlyph {
     pub key: GlyphKey,
-    pub x: u32,
-    pub y: u32,
-    pub width: u32,
-    pub height: u32,
+    pub bounds: Bounds,
 }
 
 /// The layout information for a glyph
 #[non_exhaustive]
 #[derive(Clone, Debug)]
 pub struct Metrics {
-    pub x: i32,
-    pub y: i32,
-    pub width: u32,
-    pub height: u32,
+    pub bounds: Option<Bounds>,
     pub bearing_x: f32,
     pub advance_x: f32,
     pub bearing_y: f32,
     pub advance_y: f32,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct Bounds {
+    pub x: i32,
+    pub y: i32,
+    pub width: u32,
+    pub height: u32,
 }
 
 // TODO: derive error
@@ -276,6 +281,12 @@ pub enum CacheError {
     TextureTooSmall,
     /// The cache cannot store the current request without clearing it first
     OutOfSpace,
+    /// A glyph was passed to a render method but it could not be rendered
+    ///
+    /// For example, unsized glyphs (glyphs with None for their [`bounds`]) cannot be rendered
+    ///
+    /// [`bounds`]: Metrics::bounds
+    NonRenderableGlyph
 }
 
 /// How the pixels of the rasterized font are represented

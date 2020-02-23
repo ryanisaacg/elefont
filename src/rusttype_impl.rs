@@ -32,16 +32,18 @@ impl FontProvider for Font<'_> {
     fn metrics(&self, key: GlyphKey) -> Metrics {
         let glyph = scaled_glyph(self, key);
         let h_metrics = glyph.h_metrics();
-        let shape = glyph
+        let bounds = glyph
             .positioned(Point { x: 0.0, y: 0.0 })
             .pixel_bounding_box()
-            .expect("The size of the glyph could not be calculated");
+            .map(|shape| Bounds {
+                x: shape.min.x,
+                y: shape.min.y,
+                width: shape.width() as u32,
+                height: shape.height() as u32,
+            });
 
         Metrics {
-            x: shape.min.x,
-            y: shape.min.y,
-            width: shape.width() as u32,
-            height: shape.height() as u32,
+            bounds,
             bearing_x: h_metrics.left_side_bearing,
             advance_x: h_metrics.advance_width,
             bearing_y: 0.0,
@@ -49,16 +51,16 @@ impl FontProvider for Font<'_> {
         }
     }
 
-    fn rasterize(&self, key: GlyphKey) -> Vec<u8> {
+    fn rasterize(&self, key: GlyphKey) -> Result<Vec<u8>, CacheError> {
         let glyph = scaled_glyph(self, key).positioned(Point { x: 0.0, y: 0.0 });
         let bounds = glyph
             .pixel_bounding_box()
-            .expect("The size of the glyph could not be calculated");
+            .ok_or(CacheError::NonRenderableGlyph)?;
         let mut buffer = vec![0u8; (bounds.width() * bounds.height()) as usize];
         let width = bounds.width() as u32;
         glyph.draw(|x, y, val| buffer[(x + y * width) as usize] = (val * 255.0) as u8);
 
-        buffer
+        Ok(buffer)
     }
 
     fn kerning(&self, a: Glyph, b: Glyph, size: f32) -> Option<f32> {
