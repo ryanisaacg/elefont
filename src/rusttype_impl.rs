@@ -34,6 +34,8 @@ impl FontProvider for Font<'_> {
             .expect("The size of the glyph could not be calculated");
 
         Metrics {
+            x: shape.min.x,
+            y: shape.min.y,
             width: shape.width() as u32,
             height: shape.height() as u32,
             bearing_x: h_metrics.left_side_bearing,

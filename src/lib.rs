@@ -231,6 +231,8 @@ pub struct TextureGlyph {
 #[non_exhaustive]
 #[derive(Clone, Debug)]
 pub struct Metrics {
+    pub x: i32,
+    pub y: i32,
     pub width: u32,
     pub height: u32,
     pub bearing_x: f32,
