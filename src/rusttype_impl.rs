@@ -65,6 +65,6 @@ impl FontProvider for Font<'_> {
 fn scaled_glyph<'a>(font: &'a Font, key: GlyphKey) -> rusttype::ScaledGlyph<'a> {
     let id = GlyphId(key.glyph.0);
     let glyph = font.glyph(id);
-    let size = f32::from_bits(key.size);
+    let size = key.size();
     glyph.scaled(Scale { x: size, y: size })
 }

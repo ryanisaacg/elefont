@@ -190,6 +190,7 @@ impl<T: Texture> Cache<T> {
         let pixel_type = self.font.pixel_type();
         let data = self.font.rasterize(key);
         let gpu = TextureGlyph {
+            key,
             x: self.h_cursor,
             y: self.v_cursor,
             width: metrics.width,
@@ -211,20 +212,34 @@ impl<T: Texture> Cache<T> {
 /// distinct glyphs, and are unconditionally the same glyph. In others, this might not be true. See
 /// ['Text Rendering Hates You'](https://gankra.github.io/blah/text-hates-you) for more information
 /// on why text is complicated.
-#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Glyph(pub u32);
 
 /// A glyph with a size to allow rendering
-#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct GlyphKey {
     pub glyph: Glyph,
-    pub size: u32,
+    size: u32,
+}
+
+impl GlyphKey {
+    pub fn new(glyph: Glyph, size: f32) -> GlyphKey {
+        GlyphKey {
+            glyph,
+            size: size.to_bits(),
+        }
+    }
+
+    pub fn size(&self) -> f32 {
+        f32::from_bits(self.size)
+    }
 }
 
 
 /// The relevant information for a glyph stored on the texture
 #[derive(Copy, Clone, Debug)]
 pub struct TextureGlyph {
+    pub key: GlyphKey,
     pub x: u32,
     pub y: u32,
     pub width: u32,
