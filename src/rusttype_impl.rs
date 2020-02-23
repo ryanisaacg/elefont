@@ -1,6 +1,6 @@
 use super::*;
 
-use rusttype::{Font, Point, Scale};
+use rusttype::{GlyphId, Font, Point, Scale};
 
 impl FontProvider for Font<'_> {
     fn line_width(&self, _size: f32) -> f32 {
@@ -56,10 +56,14 @@ impl FontProvider for Font<'_> {
 
         buffer
     }
+
+    fn kerning(&self, a: Glyph, b: Glyph, size: f32) -> Option<f32> {
+        Some(self.pair_kerning(Scale { x: size, y: size }, GlyphId(a.0), GlyphId(b.0)))
+    }
 }
 
 fn scaled_glyph<'a>(font: &'a Font, key: GlyphKey) -> rusttype::ScaledGlyph<'a> {
-    let id = rusttype::GlyphId(key.glyph.0);
+    let id = GlyphId(key.glyph.0);
     let glyph = font.glyph(id);
     let size = f32::from_bits(key.size);
     glyph.scaled(Scale { x: size, y: size })

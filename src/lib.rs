@@ -48,6 +48,10 @@ pub trait FontProvider {
     ///
     /// [`pixel_type`]: FontProvider::pixel_type
     fn rasterize(&self, key: GlyphKey) -> Vec<u8>;
+    /// Optionally expose extra kerning information for glyphs
+    ///
+    /// By default, this is always None
+    fn kerning(&self, _a: Glyph, _b: Glyph, _size: f32) -> Option<f32> { None }
 }
 
 /// Any object that can take the data for glyphs and store it over time
