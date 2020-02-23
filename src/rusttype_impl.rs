@@ -21,8 +21,12 @@ impl FontProvider for Font<'_> {
         PixelType::Alpha
     }
 
+    fn single_glyph(&self, c: char) -> Glyph {
+        Glyph(self.glyph(c).id().0)
+    }
+
     fn glyphs(&self, string: &str, glyphs: &mut Vec<Glyph>) {
-        glyphs.extend(string.chars().map(|c| Glyph(self.glyph(c).id().0)));
+        glyphs.extend(self.glyphs_for(string.chars()).map(|g| Glyph(g.id().0)));
     }
 
     fn metrics(&self, key: GlyphKey) -> Metrics {
