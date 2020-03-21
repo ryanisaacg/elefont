@@ -19,11 +19,6 @@ mod image_impl;
 #[cfg(feature = "rusttype")]
 pub mod rusttype_provider;
 
-// TODO: handle whitespace inside the string
-// TODO: texture too small
-// TODO: going to want a better hashmap
-// TODO: probably add a better packing algorithm
-// TODO: subpixel positioning hints
 use std::collections::HashMap;
 
 /// Any object that can turn characters into glyphs and render them can be a FontProvider
