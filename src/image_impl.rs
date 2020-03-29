@@ -35,7 +35,7 @@ impl Texture for ImageBuffer<Rgba<u8>, Vec<u8>> {
                 for x in bx..gpu.bounds.width {
                     for y in by..gpu.bounds.height {
                         let index = ((x + y * gpu.bounds.height) * 4) as usize;
-                        let pixel = &data[index..(4+index)];
+                        let pixel = &data[index..(4 + index)];
                         self.get_pixel_mut(x, y).0.clone_from_slice(pixel);
                     }
                 }

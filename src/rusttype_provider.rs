@@ -1,6 +1,6 @@
 use super::*;
 
-use rusttype::{GlyphId, Font, Point, Scale};
+use rusttype::{Font, GlyphId, Point, Scale};
 
 #[derive(Clone)]
 pub struct SizedFont<'a> {
@@ -10,10 +10,7 @@ pub struct SizedFont<'a> {
 
 impl<'a> SizedFont<'a> {
     pub fn new(font: Font<'a>, size: f32) -> Self {
-        SizedFont {
-            font,
-            size
-        }
+        SizedFont { font, size }
     }
 
     pub fn with_size(&self, size: f32) -> Self {
@@ -34,7 +31,10 @@ impl<'a> SizedFont<'a> {
 
 impl FontProvider for SizedFont<'_> {
     fn line_height(&self) -> f32 {
-        let metrics = self.font.v_metrics(Scale { x: self.size, y: self.size });
+        let metrics = self.font.v_metrics(Scale {
+            x: self.size,
+            y: self.size,
+        });
 
         metrics.ascent - metrics.descent + metrics.line_gap
     }
@@ -48,7 +48,11 @@ impl FontProvider for SizedFont<'_> {
     }
 
     fn glyphs(&self, string: &str, glyphs: &mut Vec<Glyph>) {
-        glyphs.extend(self.font.glyphs_for(string.chars()).map(|g| Glyph(g.id().0)));
+        glyphs.extend(
+            self.font
+                .glyphs_for(string.chars())
+                .map(|g| Glyph(g.id().0)),
+        );
     }
 
     fn metrics(&self, glyph: Glyph) -> Metrics {
@@ -86,7 +90,14 @@ impl FontProvider for SizedFont<'_> {
     }
 
     fn kerning(&self, a: Glyph, b: Glyph) -> f32 {
-        self.font.pair_kerning(Scale { x: self.size, y: self.size }, GlyphId(a.0), GlyphId(b.0))
+        self.font.pair_kerning(
+            Scale {
+                x: self.size,
+                y: self.size,
+            },
+            GlyphId(a.0),
+            GlyphId(b.0),
+        )
     }
 }
 

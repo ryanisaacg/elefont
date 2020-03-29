@@ -56,7 +56,9 @@ pub trait FontProvider {
     ///
     /// By default, this is always 0.0. Some font providers may add more information here,
     /// however.
-    fn kerning(&self, _a: Glyph, _b: Glyph) -> f32 { 0.0 }
+    fn kerning(&self, _a: Glyph, _b: Glyph) -> f32 {
+        0.0
+    }
 }
 
 /// Any object that can take the data for glyphs and store it over time
@@ -90,7 +92,6 @@ struct Cache<T: Texture> {
     v_cursor: u32,
     current_line_height: u32,
 }
-
 
 impl<T: Texture> FontCache<T> {
     /// Create a new FontCache that pulls from the given provider and renders to the provided
@@ -152,9 +153,7 @@ impl<T: Texture> FontCache<T> {
     /// bitmap font.) Under the hood, this just calls [`render_string`] and ignores the returned
     /// glyphs.
     pub fn cache_string(&mut self, string: &str) -> Result<(), CacheError> {
-        self.render_string(string)
-            .map(|r| r.map(|_| ()))
-            .collect()
+        self.render_string(string).map(|r| r.map(|_| ())).collect()
     }
 
     pub fn texture(&self) -> &T {
@@ -263,7 +262,7 @@ pub enum CacheError {
     /// For example, unsized glyphs (glyphs with None for their [`bounds`]) cannot be rendered
     ///
     /// [`bounds`]: Metrics::bounds
-    NonRenderableGlyph
+    NonRenderableGlyph,
 }
 
 /// How the pixels of the rasterized font are represented
