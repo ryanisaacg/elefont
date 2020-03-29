@@ -1,21 +1,23 @@
 use elefont::FontCache;
+use elefont::rusttype_provider::SizedFont;
 use image::ImageBuffer;
 use rusttype::Font;
 
 fn main() {
     let font_data = include_bytes!("DejaVuSans.ttf");
     let font = Font::from_bytes(font_data as &[u8]).expect("Error constructing Font");
+    let font = SizedFont::new(font, 24.0);
 
     let image = ImageBuffer::new(200, 200);
 
     let mut cache = FontCache::new(Box::new(font), image);
-    cache.render_string("Hello, world!", 24.0).for_each(|r| {
+    cache.render_string("Hello, world!").for_each(|r| {
         r.unwrap();
     });
-    cache.render_string("こんにちは世界！", 16.0).for_each(|r| {
+    cache.render_string("こんにちは世界！").for_each(|r| {
         r.unwrap();
     });
-    cache.render_string("Привет, мир!", 16.0).for_each(|r| {
+    cache.render_string("Привет, мир!").for_each(|r| {
         r.unwrap();
     });
     cache
