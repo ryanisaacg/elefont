@@ -81,7 +81,7 @@ impl FontProvider for SizedFont<'_> {
         let glyph = scaled_glyph(&self.font, glyph, self.size).positioned(Point { x: 0.0, y: 0.0 });
         let bounds = glyph
             .pixel_bounding_box()
-            .ok_or(CacheError::NonRenderableGlyph)?;
+            .ok_or(CacheError::NonRenderableGlyph(glyph))?;
         let mut buffer = vec![0u8; (bounds.width() * bounds.height()) as usize];
         let width = bounds.width() as u32;
         glyph.draw(|x, y, val| buffer[(x + y * width) as usize] = (val * 255.0) as u8);

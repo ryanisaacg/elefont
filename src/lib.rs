@@ -3,18 +3,19 @@
 //! This fits as a layer in your rendering pipeline between font rasterization and shaping and text
 //! rendering. In other words, first you turn a string into a series of font glyphs. Each of those
 //! glyphs is looked up against the cache, and if it hasn't been rendered, it is turned into a
-//! bitmap and uploaded to the GPU. The string is laid out
+//! bitmap and uploaded to the GPU. The string is then laid out and rendered by the client
+//! application.
 //!
 //! Scope of this library:
 //! - DO support various font libraries / types of fonts (rusttype / fontdue for TTFs, bitmap fonts
 //! of various types)
-//! - DO support various types of graphics backends (GL, wgpu, vulkan, various higher-level
-//! frameworks)
+//! - DO support whatever backend (rendering to an image, GPU frameworks, etc.)
 //! - DON'T handle complex tasks like shaping. The font stack should handle that elsewhere, and
 //! provide this library the glyphs to render
-//! - DON'T handle layout or rendering to the screen. This can be taken care of
+//! - DON'T handle layout. This can be taken care of by the client
+//! application when rendering.
 
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 extern crate alloc;
 
 #[cfg(feature = "image")]
@@ -252,11 +253,10 @@ pub struct Bounds {
     pub height: u32,
 }
 
-// TODO: derive error
 /// An error generated during a cache operation
 #[derive(Copy, Clone, Debug)]
 pub enum CacheError {
-    /// No matter what, the texture is too small to render the glyph
+    /// No matter what, the texture is too small to render the glyph (even when empty)
     ///
     /// To fix this error, expand the texture. Make sure to clear the cache if the texture data is
     /// also invalidated
@@ -268,7 +268,35 @@ pub enum CacheError {
     /// For example, unsized glyphs (glyphs with None for their [`bounds`]) cannot be rendered
     ///
     /// [`bounds`]: Metrics::bounds
-    NonRenderableGlyph,
+    NonRenderableGlyph(Glyph),
+}
+
+#[cfg(feature = "std")]
+use std::{error::Error, fmt};
+
+#[cfg(feature = "std")]
+impl fmt::Display for CacheError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            CacheError::TextureTooSmall => {
+                write!(f, "The texture is too small to render the given input")
+            }
+            CacheError::OutOfSpace => write!(
+                f,
+                "The cache is out of space, and must be cleared before more rendering"
+            ),
+            CacheError::NonRenderableGlyph(glyph) => {
+                write!(f, "Attempted to render an un-renderable glyph: {:?}", glyph)
+            }
+        }
+    }
+}
+
+#[cfg(feature = "std")]
+impl Error for CacheError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        None
+    }
 }
 
 /// How the pixels of the rasterized font are represented
