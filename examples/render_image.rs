@@ -1,5 +1,5 @@
-use elefont::FontCache;
 use elefont::rusttype_provider::SizedFont;
+use elefont::FontCache;
 use image::ImageBuffer;
 use rusttype::Font;
 
