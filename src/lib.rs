@@ -14,12 +14,18 @@
 //! provide this library the glyphs to render
 //! - DON'T handle layout or rendering to the screen. This can be taken care of
 
+#![no_std]
+extern crate alloc;
+
 #[cfg(feature = "image")]
 mod image_impl;
 #[cfg(feature = "rusttype")]
 pub mod rusttype_provider;
 
-use std::collections::HashMap;
+use alloc::borrow::ToOwned;
+use alloc::boxed::Box;
+use alloc::vec::Vec;
+use hashbrown::HashMap;
 
 /// Any object that can turn characters into glyphs and render them can be a FontProvider
 ///
