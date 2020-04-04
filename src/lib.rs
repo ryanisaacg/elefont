@@ -7,13 +7,15 @@
 //! application.
 //!
 //! Scope of this library:
-//! - DO support various font libraries / types of fonts (rusttype / fontdue for TTFs, bitmap fonts
-//! of various types)
+//! - DO support various font libraries / types of fonts (TTFs, bitmap fonts)
 //! - DO support whatever backend (rendering to an image, GPU frameworks, etc.)
 //! - DON'T handle complex tasks like shaping. The font stack should handle that elsewhere, and
 //! provide this library the glyphs to render
 //! - DON'T handle layout. This can be taken care of by the client
 //! application when rendering.
+//!
+//! Support is available out-of-the-box for software rendering via `image`, rendering via
+//! `rusttype`, and performing automatic unicode normalization. All of these are optional features.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 extern crate alloc;

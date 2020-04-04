@@ -1,8 +1,17 @@
 [package]
 name = "elefont"
+description = "A library that handles caching rendered glyphs on the GPU"
 version = "0.1.0"
 authors = ["Ryan Goldstein <ryan@ryanisaacg.com>"]
 edition = "2018"
+categories = ["text-processing"]
+keywords = ["font", "font-cache"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/ryanisaacg/elefont"
+
+[package.metadata.docs.rs]
+features = ["image", "rusttype"]
 
 [features]
 std = []
