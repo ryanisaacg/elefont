@@ -28,6 +28,8 @@ pub mod rusttype_provider;
 #[cfg(not(feature = "unicode-normalization"))]
 use alloc::borrow::ToOwned;
 use alloc::boxed::Box;
+#[cfg(feature = "unicode-normalization")]
+use alloc::string::String;
 use alloc::vec::Vec;
 use hashbrown::HashMap;
 
