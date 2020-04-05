@@ -1,7 +1,7 @@
 [package]
 name = "elefont"
 description = "A library that handles caching rendered glyphs on the GPU"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Ryan Goldstein <ryan@ryanisaacg.com>"]
 edition = "2018"
 categories = ["text-processing"]
