@@ -78,7 +78,8 @@ impl FontProvider for SizedFont<'_> {
     }
 
     fn rasterize(&self, glyph: Glyph) -> Result<Vec<u8>, CacheError> {
-        let scaled_glyph = scaled_glyph(&self.font, glyph, self.size).positioned(Point { x: 0.0, y: 0.0 });
+        let scaled_glyph =
+            scaled_glyph(&self.font, glyph, self.size).positioned(Point { x: 0.0, y: 0.0 });
         let bounds = scaled_glyph
             .pixel_bounding_box()
             .ok_or(CacheError::NonRenderableGlyph(glyph))?;
