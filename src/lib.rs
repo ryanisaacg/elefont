@@ -25,6 +25,7 @@ mod image_impl;
 #[cfg(feature = "rusttype")]
 pub mod rusttype_provider;
 
+#[cfg(not(feature = "unicode-normalization"))]
 use alloc::borrow::ToOwned;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
