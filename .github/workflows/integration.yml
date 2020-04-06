@@ -16,15 +16,11 @@ jobs:
     - uses: actions/checkout@master
     - name: Check formatting
       run: cargo fmt -- --check
-    - name: Clippy desktop
+    - name: Clippy
       run: cargo clippy -- -D warnings
-    - name: Clippy desktop with features enabled
+    - name: Clippy with all features
       run: cargo clippy --all-features -- -D warnings
-    - name: Check stdweb
-      if: matrix.os == 'macOS-latest'
-      run: cargo install cargo-web && cargo web check --features stdweb
-    - name: Clippy web-sys
-      if: matrix.os == 'macOS-latest'
-      run: cargo clippy --target wasm32-unknown-unknown --features web-sys -- -D warnings
+    - name: Clippy with doc features
+      run: cargo clippy --features image,rusttype
     - name: Examples
       run: cargo check --all-features --examples
