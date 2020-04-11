@@ -168,6 +168,17 @@ impl<T: Texture> FontCache<T> {
         self.render_string(string).map(|r| r.map(|_| ())).collect()
     }
 
+    /// Swap out the internal texture for another one
+    ///
+    /// This will clear the cache automatically, to avoid holding references to invalid areas of
+    /// the texture
+    pub fn replace_texture(&mut self, mut texture: T) -> T {
+        self.clear();
+        core::mem::swap(&mut self.cache.texture, &mut texture);
+
+        texture
+    }
+
     pub fn texture(&self) -> &T {
         &self.cache.texture
     }

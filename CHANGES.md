@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.1.3
+- Add `FontCache::replace_texture`
+
 ## v0.1.2
 - Fix a compilation error without std but with unicode-normalization
 
