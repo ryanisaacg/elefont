@@ -23,7 +23,6 @@ jobs:
     - uses: hecrj/setup-rust-action@v1.2.0
       with:
         rust-version: ${{ matrix.rust }}
-        components: clippy,rustfmt
     - uses: actions/checkout@master
     - name: Clippy
       run: cargo test ${{ matrix.options }}
@@ -39,7 +38,7 @@ jobs:
     - uses: hecrj/setup-rust-action@v1.2.0
       with:
         rust-version: ${{ matrix.rust }}
-        components: clippy,rustfmt
+        components: clippy
     - uses: actions/checkout@master
     - name: Clippy
       run: cargo clippy ${{ matrix.features }} -- -D warnings
