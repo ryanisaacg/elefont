@@ -21,3 +21,7 @@ hashbrown = { version = "0.7.1", default-features = false, features = ["ahash"] 
 image = { version = "0.22", default-features = false, optional = true }
 rusttype = { version = "0.8", optional = true }
 unicode-normalization = { version = "0.1.12", optional = true }
+
+[[example]]
+name = "render_image"
+required-features = ["image", "rusttype"]

@@ -1,26 +1,45 @@
 name: Integration
 on: [push, pull_request]
 jobs:
-  test:
-    runs-on: ${{ matrix.os }}
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: hecrj/setup-rust-action@v1
+      with:
+        rust-version: stable
+        components: rustfmt
+    - name: Check Formatting
+      run: cargo fmt --all -- --check
+
+	test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
         rust: [stable, nightly]
+				features: ['', --all-features, '--features image,rusttype']
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: hecrj/setup-rust-action@v1.2.0
       with:
         rust-version: ${{ matrix.rust }}
         components: clippy,rustfmt
-        targets: wasm32-unknown-unknown
     - uses: actions/checkout@master
-    - name: Check formatting
-      run: cargo fmt -- --check
     - name: Clippy
-      run: cargo clippy -- -D warnings
-    - name: Clippy with all features
-      run: cargo clippy --all-features -- -D warnings
-    - name: Clippy with doc features
-      run: cargo clippy --features image,rusttype
-    - name: Examples
-      run: cargo check --all-features --examples
+      run: cargo test ${{ matrix.features }}
+
+  clippy:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        rust: [stable]
+				features: ['', --all-features, '--features image,rusttype']
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: hecrj/setup-rust-action@v1.2.0
+      with:
+        rust-version: ${{ matrix.rust }}
+        components: clippy,rustfmt
+    - uses: actions/checkout@master
+    - name: Clippy
+      run: cargo clippy ${{ matrix.features }} -- -D warnings
