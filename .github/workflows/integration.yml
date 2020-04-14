@@ -24,8 +24,8 @@ jobs:
       with:
         rust-version: ${{ matrix.rust }}
     - uses: actions/checkout@master
-    - name: Clippy
-      run: cargo test ${{ matrix.options }}
+    - name: Test
+      run: cargo test ${{ matrix.options }} --examples
 
   clippy:
     strategy:
