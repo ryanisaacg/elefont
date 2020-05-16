@@ -15,11 +15,13 @@
 //! application when rendering.
 //!
 //! Support is available out-of-the-box for software rendering via `image`, rendering via
-//! `rusttype`, and performing automatic unicode normalization. All of these are optional features.
+//! `rusttype` or `fontdue`, and performing automatic unicode normalization. All of these are optional features.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 extern crate alloc;
 
+#[cfg(feature = "fontdue")]
+pub mod fontdue_provider;
 #[cfg(feature = "image")]
 mod image_impl;
 #[cfg(feature = "rusttype")]
