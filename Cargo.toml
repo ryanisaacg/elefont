@@ -20,9 +20,9 @@ std = []
 hashbrown = { version = "0.7.1", default-features = false, features = ["ahash"] }
 image = { version = "0.22", default-features = false, optional = true }
 rusttype = { version = "0.8", optional = true }
-fontdue = { git = "https://github.com/mooman219/fontdue", optional = true }
+fontdue = { version = "0.0.4", optional = true }
 unicode-normalization = { version = "0.1.12", optional = true }
 
 [[example]]
 name = "render_image"
-required-features = ["image", "rusttype", "fontdue"]
+required-features = ["image", "rusttype"]

@@ -33,9 +33,7 @@ impl SizedFont {
 
 impl FontProvider for SizedFont {
     fn line_height(&self) -> f32 {
-        self.font
-            .vertical_line_metrics(self.size)
-            .map_or(0.0, |metrics| metrics.new_line_size)
+        self.font.new_line_height(self.size)
     }
 
     fn pixel_type(&self) -> PixelType {
