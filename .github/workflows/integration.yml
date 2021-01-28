@@ -20,7 +20,7 @@ jobs:
         rust: [stable, nightly]
         features: ['', '--all-features', "--features image,rusttype"]
     steps:
-    - uses: hecrj/setup-rust-action@v1.2.0
+    - uses: hecrj/setup-rust-action@v1
       with:
         rust-version: ${{ matrix.rust }}
     - uses: actions/checkout@master
@@ -35,7 +35,7 @@ jobs:
         features: ['', '--all-features', "--features image,rusttype"]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: hecrj/setup-rust-action@v1.2.0
+    - uses: hecrj/setup-rust-action@v1
       with:
         rust-version: ${{ matrix.rust }}
         components: clippy
