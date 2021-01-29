@@ -167,7 +167,7 @@ impl<T: Texture> FontCache<T> {
     /// bitmap font.) Under the hood, this just calls [`render_string`] and ignores the returned
     /// glyphs.
     pub fn cache_string(&mut self, string: &str) -> Result<(), CacheError> {
-        self.render_string(string).map(|r| r.map(|_| ())).collect()
+        self.render_string(string).try_for_each(|r| r.map(drop))
     }
 
     /// Swap out the internal texture for another one
