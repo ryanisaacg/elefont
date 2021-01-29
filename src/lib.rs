@@ -101,7 +101,7 @@ pub struct FontCache<T: Texture> {
 struct Cache<T: Texture> {
     font: Box<dyn FontProvider>,
     texture: T,
-    map: HashMap<Glyph, TextureGlyph>,
+    map: HashMap<Glyph, TextureGlyph, ahash::RandomState>,
     h_cursor: u32,
     v_cursor: u32,
     current_line_height: u32,
@@ -116,7 +116,7 @@ impl<T: Texture> FontCache<T> {
             cache: Cache {
                 font,
                 texture,
-                map: HashMap::new(),
+                map: HashMap::default(),
                 h_cursor: 0,
                 v_cursor: 0,
                 current_line_height: 0,
