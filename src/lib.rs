@@ -243,7 +243,7 @@ impl<T: Texture> Cache<T> {
 /// ['Text Rendering Hates You'](https://gankra.github.io/blah/text-hates-you) for more information
 /// on why text is complicated.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
-pub struct Glyph(pub u16);
+pub struct Glyph(pub u32);
 
 /// The relevant information for a glyph stored on the texture
 #[derive(Copy, Clone, Debug)]

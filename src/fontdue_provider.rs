@@ -45,7 +45,7 @@ impl FontProvider for SizedFont {
 
     fn single_glyph(&self, c: char) -> Glyph {
         // Note: fontdue uses a u16 internally
-        Glyph(self.font.lookup_glyph_index(c) as u16)
+        Glyph(self.font.lookup_glyph_index(c) as u32)
     }
 
     fn glyphs(&self, string: &str, glyphs: &mut Vec<Glyph>) {
