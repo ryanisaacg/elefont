@@ -44,14 +44,14 @@ impl FontProvider for SizedFont<'_> {
     }
 
     fn single_glyph(&self, c: char) -> Glyph {
-        Glyph(self.font.glyph(c).id().0)
+        Glyph(self.font.glyph(c).id().0.into())
     }
 
     fn glyphs(&self, string: &str, glyphs: &mut Vec<Glyph>) {
         glyphs.extend(
             self.font
                 .glyphs_for(string.chars())
-                .map(|g| Glyph(g.id().0)),
+                .map(|g| Glyph(g.id().0.into())),
         );
     }
 
@@ -96,14 +96,14 @@ impl FontProvider for SizedFont<'_> {
                 x: self.size,
                 y: self.size,
             },
-            GlyphId(a.0),
-            GlyphId(b.0),
+            GlyphId(a.0 as u16),
+            GlyphId(b.0 as u16),
         )
     }
 }
 
 fn scaled_glyph<'a>(font: &'a Font, glyph: Glyph, size: f32) -> rusttype::ScaledGlyph<'a> {
-    let id = GlyphId(glyph.0);
+    let id = GlyphId(glyph.0 as u16);
     let glyph = font.glyph(id);
     glyph.scaled(Scale { x: size, y: size })
 }

@@ -33,7 +33,10 @@ impl SizedFont {
 
 impl FontProvider for SizedFont {
     fn line_height(&self) -> f32 {
-        self.font.new_line_height(self.size)
+        match self.font.vertical_line_metrics(self.size) {
+            Some(m) => m.new_line_size,
+            None => 0.0,
+        }
     }
 
     fn pixel_type(&self) -> PixelType {
@@ -41,7 +44,7 @@ impl FontProvider for SizedFont {
     }
 
     fn single_glyph(&self, c: char) -> Glyph {
-        // Note: fontdue uses a u32 internally
+        // Note: fontdue uses a u16 internally
         Glyph(self.font.lookup_glyph_index(c) as u32)
     }
 
@@ -62,9 +65,9 @@ impl FontProvider for SizedFont {
 
         Metrics {
             bounds: Some(bounds),
-            bearing_x: aabb.xmin,
+            bearing_x: aabb.xmin + aabb.width,
             advance_x: metrics.advance_width,
-            bearing_y: aabb.ymax,
+            bearing_y: aabb.ymin + aabb.height,
             advance_y: metrics.advance_height,
         }
     }
