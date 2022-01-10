@@ -5,7 +5,7 @@ use rusttype::Font;
 
 fn main() {
     let font_data = include_bytes!("DejaVuSans.ttf");
-    let font = Font::from_bytes(font_data as &[u8]).expect("Error constructing Font");
+    let font = Font::try_from_bytes(font_data as &[u8]).expect("Error constructing Font");
     let font = SizedFont::new(font, 24.0);
 
     let image = ImageBuffer::new(200, 200);
